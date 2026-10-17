@@ -42,6 +42,10 @@ applyLangDoc();
 
 // 英語の 辞書(キーは 日本語の 文そのまま)
 const EN_DICT = {
+  "あまぐもの そら": "Rain-Cloud Sky",
+  "いのちの かけら ": "Life piece ",
+  "ここでは つばさが つかえない。しかけを つかおう": "Wings don't work here. Use the gadget!",
+  "ここでは つばさ・かべジャンプが つかえない。しかけを つかおう": "Wings and wall jumps don't work here. Use the gadget!",
   // タッチの ボタンの みえかた(2026-10-13)
   "ボタン: ふつう": "Buttons: Normal",
   "ボタン: うすい": "Buttons: Light",
@@ -97,6 +101,11 @@ const EN_DICT = {
   "テスト版では まだ ふくげんできません": "Restore isn't available in the test version yet",
   "この版では ふくげんできません": "Can't restore in this version",
   "アプリ版で ためしてください": "Please try it in the app",
+  "ストアに つないでいます…": "Connecting to the App Store…",
+  "しばらくしてから もういちど ためしてください": "Please try again in a little while",
+  "かった きろくを さがしています…": "Looking for your purchase…",
+  "ストアに つなげませんでした": "Couldn't reach the App Store",
+  "完全版を かう": "Buy Full Version",
   "完全版に なりました!": "You have the Full Version!",
   "ワールド2から さきが あそべます": "World 2 and beyond are open",
   "おたすけ たて!": "Helper Shield!",
@@ -206,6 +215,7 @@ const EN_DICT = {
   "ちゅうかんゲート!": "Checkpoint Gate!",
   "ここから やりなおせる。たてを もらった!": "You'll restart here. Got a shield!",
   "ここからやりなおせます": "You'll restart here",
+  "ここから やりなおせる": "You'll restart here",
   "たからばこ! +500": "Treasure chest! +500",
   "とびらがひらいた!": "The door opened!",
   "カギがかかっている": "It's locked",
