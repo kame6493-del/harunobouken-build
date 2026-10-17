@@ -1,0 +1,14 @@
+{
+  "appId": "jp.harunobouken.app",
+  "appName": "ハルの冒険",
+  "webDir": "www",
+  "backgroundColor": "#1b1f3a",
+  "android": {
+    "allowMixedContent": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "scrollEnabled": false,
+    "backgroundColor": "#1b1f3a"
+  }
+}
