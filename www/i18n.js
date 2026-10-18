@@ -42,7 +42,6 @@ applyLangDoc();
 
 // 英語の 辞書(キーは 日本語の 文そのまま)
 const EN_DICT = {
-  "あまぐもの そら": "Rain-Cloud Sky",
   "いのちの かけら ": "Life piece ",
   "ここでは つばさが つかえない。しかけを つかおう": "Wings don't work here. Use the gadget!",
   "ここでは つばさ・かべジャンプが つかえない。しかけを つかおう": "Wings and wall jumps don't work here. Use the gadget!",
@@ -158,6 +157,14 @@ const EN_DICT = {
   "まめの つるが のびた!": "The beanstalk grew!",
   "↑で のぼれるよ": "Press ↑ to climb",
   "ヒップドロップ!": "Ground Pound!",
+  "くうちゅうで ↓。レンガを わる・てきに つよい いちげき": "Press Down in midair. Breaks bricks and hits enemies hard",
+  "くうちゅうで ▼(下へ スワイプ)。レンガを わる・てきに つよい いちげき": "Tap ▼ (or swipe down) in midair. Breaks bricks and hits enemies hard",
+  "くうちゅうで ↓。レンガを 上から わる・てきに つよい いちげき": "Press Down in midair to break bricks from above and hit enemies hard",
+  "くうちゅうで ▼(下へ スワイプ)。レンガを 上から わる": "Tap ▼ (or swipe down) in midair to break bricks from above",
+  "くうちゅうで ↓。ずしんと おちて レンガを わる・てきに つよい いちげき": "Press Down in midair to slam down, break bricks and hit enemies hard",
+  "ジャンプして ▼(下へ スワイプでも)。ずしんと おちる": "Jump, then tap ▼ (or swipe down) to slam down",
+  "▼ しゃがむ・ヒップ": "▼ Crouch / Pound",
+  "くうちゅうで": "In midair",
   "くうちゅうで ↓。じめんを たたいて レンガを こわす": "↓ in midair. Smash the ground and break bricks",
   "くうちゅうで ▼。じめんを たたいて レンガを こわす": "▼ in midair. Smash the ground and break bricks",
   "がけに つかまった!": "Ledge grab!",
@@ -1348,6 +1355,7 @@ const theName = (n, cap) => { const s = EN_THE.has(n) ? 'the ' + n : n; return c
 const enList = s => s.split('・').map(x => T(x)).join(', ');
 // 組み立てた 文の きまり(上から じゅんに ためす)
 const EN_PAT = [
+  [/^(\d+) \/ (\d+) ページ$/, m => 'Page ' + m[1] + ' / ' + m[2]], // 2026-10-18 ずかんの ページ(英語で 日本語が のこっていた)
   [/^今日の1面 #(-?\d+)( ✔)?$/, m => 'Daily #' + m[1] + (m[2] || '')],
   [/^今日の1面 #(-?\d+) クリア!$/, m => 'Daily #' + m[1] + ' Clear!'],
   [/^クリアずみ! +きょうの ベスト (\d+\.\d)びょう$/, m => "Cleared! Today's best: " + m[1] + ' sec'],
