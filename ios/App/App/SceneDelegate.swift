@@ -5,7 +5,8 @@ import Capacitor
 // - 画面の下のホームバーを隠し、画面の端のスワイプはゲームの操作を先に受ける(ジャンプ・移動の指で閉じない)
 // - コントローラーで遊ぶ間は画面に触れないので、表示中は自動ロックで暗くしない
 class HaruGameViewController: CAPBridgeViewController {
-    override var prefersHomeIndicatorAutoHidden: Bool { true }
+    // ホームバーを隠すのは Capacitor の SystemBars(capacitor.config.json の plugins.SystemBars.hidden、ios_build_repo.py が iOS 用だけに足す)。
+    // prefersHomeIndicatorAutoHidden は Capacitor が extension で public に上書きしているので、ここでは上書きできない
 
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { .all }
 

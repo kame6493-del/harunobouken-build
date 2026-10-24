@@ -10,5 +10,10 @@
     "contentInset": "never",
     "scrollEnabled": false,
     "backgroundColor": "#1b1f3a"
+  },
+  "plugins": {
+    "SystemBars": {
+      "hidden": true
+    }
   }
 }
