@@ -36,7 +36,7 @@ try { Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY) || '{}')); }
 // ---------- 課金(完全版)と店 ----------
 // ワールド1(4面)は無料。完全版(買い切り)でワールド2・3が遊べる。
 // アプリ版(Capacitor + RevenueCat の Purchases プラグイン)では本当に買える。ブラウザ版では買えないので案内を出す。
-const FULL_PRICE = '¥480';
+const FULL_PRICE = '';
 // 進みぐあい: クリアした面(save.cleared)と 見つけた ひみつのゴール(save.secret)で ちずの道が ひらく
 function fixSave() {
   for (const k of ['cleared', 'secret', 'seen', 'stars', 'best', 'bag', 'shards', 'palace', 'shortcut', 'zukan']) if (!save[k] || typeof save[k] !== 'object') save[k] = {};
@@ -57,14 +57,10 @@ WORLDS.forEach((W, wi) => {
 for (const d of LEVELS) { if (d.tutorial) d.label = 'れんしゅう'; if (d.roam) d.label = 'バトル'; }
 fixSave();
 const isCleared = id => !!save.cleared[id];
-// 製作者が手元(127.0.0.1 / localhost)で遊ぶときは完全版。ネット版(github.io)は体験版のまま。
-// アプリ(Capacitor)の中も hostname が localhost になるので、アプリでは手元あつかいにしない
-const CREATOR_FULL = /^(127.0.0.1|localhost)$/.test(location.hostname) && !window.Capacitor;
-// テスト版(2026-10-13 持ち主と決定): Android のテスト版(アプリの中)だけ ぜんぶの面を無料で遊べる。ブラウザ版はワールド1だけの体験版のまま。
+const CREATOR_FULL = false;
 // iOS(App Store 版、2026-10-18 持ち主の決定): ワールド1は そのまま あそべて、ワールド2から先は 完全版(買い切り)。RevenueCat の Purchases プラグインで 本当に かう。
-// Android と ブラウザ版の うごきは 前のまま(IS_IOS の ときだけ 課金が うごく)
 const IS_IOS = !!(window.Capacitor && typeof window.Capacitor.getPlatform === 'function' && window.Capacitor.getPlatform() === 'ios');
-const TESTER_FREE = !!window.Capacitor && !IS_IOS;
+const TESTER_FREE = false;
 const RC_IOS_KEY = 'appl_XXvPspbrEDQvUQQOjZvUoElOrKb'; // RevenueCat の 公開キー(秘密の 鍵では ない)
 const FULL_PRODUCT_ID = 'jp.harunobouken.app.full';
 const IOS_OWNED_KEY = 'haru_full_ios'; // iOS で かった 記録(セーブの ファイル 3つ ぜんぶに きく)
@@ -82,7 +78,6 @@ const SHOP_ITEMS = [
 let shopMsg = null;
 const Store = {
   ready: null, pkg: null, price: '', busy: false,
-  // iOS だけ プラグインを つかう(Android の テスト版・ブラウザ版では いつも null)
   plugin() { if (!IS_IOS) return null; const C = window.Capacitor; return (C && C.Plugins && C.Plugins.Purchases) || null; },
   isFull(info) { return !!(info && info.entitlements && info.entitlements.active && info.entitlements.active.full); },
   cancelled(e) { return !!(e && (e.userCancelled || (e.data && e.data.userCancelled) || String(e.code) === '1')); },
@@ -122,7 +117,7 @@ const Store = {
       } finally { this.busy = false; }
       return;
     }
-    shopMsg = IS_IOS ? { text: 'ストアに つなげませんでした', t: 3 } : window.Capacitor ? { text: 'テスト版では まだ かえません', sub: 'こうかいの ときに かえるように なります', t: 3.5 } : { text: 'この版では かえません', sub: 'アプリ版(App Store / Google Play)で かえます', t: 3.5 };
+    shopMsg = { text: 'ストアに つなげませんでした', t: 3 };
   },
   async restore() {
     const Pur = this.plugin();
@@ -139,7 +134,7 @@ const Store = {
       } finally { this.busy = false; }
       return;
     }
-    shopMsg = IS_IOS ? { text: 'ストアに つなげませんでした', t: 3 } : window.Capacitor ? { text: 'テスト版では まだ ふくげんできません', t: 3 } : { text: 'この版では ふくげんできません', sub: 'アプリ版で ためしてください', t: 3 };
+    shopMsg = { text: 'ストアに つなげませんでした', t: 3 };
   },
   unlock() { if (IS_IOS) this.own(); save.full = true; writeSave(); sfx('clear'); shopMsg = { text: '完全版に なりました!', sub: 'ワールド2から さきが あそべます', t: 3.5 }; },
 };
@@ -481,7 +476,7 @@ addEventListener('keydown', e => {
   if (!k) return;
   e.preventDefault();
   initAudio();
-  usingTouch = false;
+  usingTouch = false; usingPad = false;
   if (!keys[k]) pressed[k] = true;
   // 2026-10-21 持ち主「上の キーで ジャンプ」: キーボードの ↑ / W は ジャンプにも なる(きめるのは updatePlayer。はしご・とびら・もちあげ中 は そちら)。
   // ▲ ボタン(スマホ)は これまでどおり ジャンプに しない
@@ -491,6 +486,27 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) keys[k] = false; if (k === 'up') upJumpHeld = false; });
 // ↑ で とんだ ときは ↑ を おしている あいだ「ジャンプを ながおし」と おなじ(たかく とぶ・はなすと ひくく)
 let upJumpHeld = false;
+// 2026-10-23 ゲームコントローラー(Gamepad API の標準の並び。iPhone の MFi・Xbox・PlayStation のコントローラー、ブラウザでも同じ)
+// A=ジャンプ B=剣 X=スピン Y・RB・RT=ダッシュ LB=どうぐ スタート=ポーズ セレクト=けってい 十字キー・左スティック=いどう
+const padKeys = {};
+let usingPad = false;
+const moveHint = () => usingPad ? 'じゅうじキー いどう   A ジャンプ   B けん' : usingTouch ? '左下の ◀▶ で いどう / ジャンプ / けん' : '←→ いどう   スペース・↑ ジャンプ   X けん';
+const PAD_BTN = { 0: 'jump', 1: 'attack', 2: 'spin', 3: 'dash', 4: 'item', 5: 'dash', 7: 'dash', 8: 'ok', 9: 'pause', 12: 'up', 13: 'down', 14: 'left', 15: 'right' };
+function pollPads() {
+  const list = (navigator.getGamepads && navigator.getGamepads()) || [];
+  const now = {};
+  for (const gp of list) {
+    if (!gp || !gp.connected) continue;
+    for (const i in PAD_BTN) { const b = gp.buttons[i]; if (b && (b.pressed || b.value > 0.5)) now[PAD_BTN[i]] = true; }
+    const ax = gp.axes || [];
+    if (ax[0] < -0.5) now.left = true; else if (ax[0] > 0.5) now.right = true;
+    if (ax[1] < -0.6) now.up = true; else if (ax[1] > 0.6) now.down = true;
+  }
+  for (const k of new Set([...Object.keys(now), ...Object.keys(padKeys)])) {
+    if (now[k] && !padKeys[k]) { pressed[k] = true; usingTouch = false; usingPad = true; initAudio(); }
+    padKeys[k] = !!now[k];
+  }
+}
 
 let usingTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const pointers = new Map();
@@ -547,7 +563,7 @@ const touchKeys = { left: false, right: false, up: false, down: false, jump: fal
 cv.addEventListener('pointerdown', e => {
   e.preventDefault();
   initAudio();
-  if (e.pointerType === 'touch') usingTouch = true;
+  if (e.pointerType === 'touch') { usingTouch = true; usingPad = false; }
   const p = canvasPos(e);
   for (const b of uiButtons) {
     if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) {
@@ -585,7 +601,7 @@ cv.addEventListener('pointerup', e => { const g = gesturePending; if (g && g.id 
 cv.addEventListener('pointercancel', () => { gesturePending = null; });
 cv.addEventListener('pointerup', endPointer);
 cv.addEventListener('pointercancel', endPointer);
-const held = k => keys[k] || touchKeys[k] || (k === 'jump' && upJumpHeld && keys.up);
+const held = k => keys[k] || touchKeys[k] || padKeys[k] || (k === 'jump' && upJumpHeld && keys.up);
 function consume(k) { const v = pressed[k]; pressed[k] = false; return v; }
 
 // ---------- 面を組み立てる ----------
@@ -854,9 +870,9 @@ function startLevel(idx, fromCheckpoint = false) {
   world.bossBgm = null; bgm(levelBgm(def));
   if (def.daily) dailyBegin(fromCheckpoint);
   if (!fromCheckpoint && def.daily) {
-    toast = { text: `${stageLabel(def)}  ${def.name}`, sub: usingTouch ? '左下の ◀▶ で いどう / ジャンプ / けん' : '←→ いどう   スペース・↑ ジャンプ   X けん', t: 3.2 };
+    toast = { text: `${stageLabel(def)}  ${def.name}`, sub: moveHint(), t: 3.2 };
   } else if (!fromCheckpoint) {
-    toast = { text: `${stageLabel(def)}  ${def.name}`, sub: idx === 0 ? (usingTouch ? '左下の ◀▶ で いどう / ジャンプ / けん' : '←→ いどう   スペース・↑ ジャンプ   X けん') : 'ほしを3つあつめよう', t: 3.2 };
+    toast = { text: `${stageLabel(def)}  ${def.name}`, sub: idx === 0 ? moveHint() : 'ほしを3つあつめよう', t: 3.2 };
   } else if (!(keep && keep.deaths >= 4 && toast && toast.text === 'おたすけ たて!')) {
     toast = null;
   }
@@ -4761,6 +4777,7 @@ function drawHelp(t) {
     const rows = [[['←', '→'], 'あるく(はしる)', 'hero_run'], [['スペース', 'Z'], 'ジャンプ(ながおしで たかく)', 'hero_jump'], [['V'], 'スピンジャンプ(トゲの てきも ふめる)', 'spiky'], [['X'], 'けん', 'hero_attack'],
       [['C', 'Shift'], 'ダッシュ(ブーツ)・おして さわると もつ', 'p_boots'], [['↓'], 'しゃがむ・いど/つつに はいる・くうちゅうで ヒップドロップ', 'hero_hipdrop'], [['↑', 'W'], 'ジャンプ・とびら・はしご・がけを のぼる', 'ladder'], [['Q', 'E'], 'よびの はこの アイテムを だす', 'reserve_box'], [['Esc'], 'いちじていし', null]];
     rows.forEach((r, i) => helpRow(y0 - 4 + i * 40, r[0], r[1], r[2]));
+    ['コントローラー: じゅうじキー いどう / A ジャンプ / B けん', 'X スピン / Y・RB ダッシュ / LB どうぐ / スタート ポーズ'].forEach((pl, i) => outlined(pl, 430, 490 + i * 22, '#bfe6ff', '#101a36', 4, isEN() ? fitFont(pl, 520, 15) : font(15, 800)));
   } else if (p === 1) {
     // スマホの 画面の ボタンの ならび(小さな 画面の 絵)
     const sx = 140, sy = 120, sw = 680, sh = 382, k = sw / VW;
@@ -4806,7 +4823,7 @@ function drawHelp(t) {
   }
   button(24, 482, 130, 46, 'もどる', closeHelp, { size: 20 });
   if (help.from !== 'pause') button(VW - 250, 482, 226, 46, 'れんしゅうを する', () => startTutorial(help.from), { size: 18, sel: true });
-  if (!usingTouch) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = font(12, 700); ctx.textAlign = 'center'; ctx.fillText('←→ ページ   Esc もどる', VW / 2, 512); }
+  if (!usingTouch) { ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.font = font(12, 700); ctx.textAlign = 'center'; ctx.fillText('←→ ページ   Esc もどる', VW / 2, 532); }
 }
 function zkWrapCenter(text, cx, y, maxW, lh) { ctx.textAlign = 'center'; let line = ''; for (const part of text.split(' / ')) { const s2 = line ? line + ' / ' + part : part; if (ctx.measureText(s2).width > maxW && line) { ctx.fillText(line, cx, y); y += lh; line = part; } else line = s2; } if (line) ctx.fillText(line, cx, y); }
 
@@ -7631,7 +7648,7 @@ function drawShop(t) {
   const lines = ['ワールド2〜8・ほしの みちの ' + LEVELS.filter(d => d.world > 1).length + 'ステージが あそべる', 'まおうの城・あらしの城 ほか', 'かいきり(1かいだけ)'];
   lines.forEach((l, i) => { if (isEN()) ctx.font = fitFont(l, 372, 18); else { let px = 18; ctx.font = font(px, 800); while (px > 12 && ctx.measureText(l).width > 372) ctx.font = font(--px, 800); } ctx.fillText(l, 240, 170 + i * 32); });
   drawFit('wizard', 165, 340, 64); drawFit('goal', 315, 340, 78);
-  if (TESTER_FREE) { outlined('テスト版は ぜんぶ むりょう', 240, 382, '#7dff8a', '#3a1a08', 6, font(22)); }
+  if (TESTER_FREE) {  }
   else {
   if (hasFull()) outlined('こうにゅうずみ', 240, 382, '#7dff8a', '#3a1a08', 6, font(26));
   else button(110, 352, 260, 56, IS_IOS ? (Store.price ? '完全版を かう ' + Store.price : '完全版を かう') : '完全版を かう ' + FULL_PRICE, () => Store.buyFull(), { sel: true, size: 22 });
@@ -7785,6 +7802,7 @@ function frame(now) {
   // ?daily=1 の リンクから きた ときは そのまま 今日の1面へ
   if (DAILY_URL && !daily.auto) { daily.auto = true; if (scene === 'title') startDaily('title'); }
   acc += real;
+  try { pollPads(); } catch (e) { /* コントローラーが 読めない ときは なにもしない */ }
   const STEP = 1 / 120;
   // 更新・描画の どこかで 例外が 出ても、つぎの こまを かならず よぶ(前は 例外で requestAnimationFrame まで とどかず 画面が 固まった)
   try {

@@ -7,7 +7,6 @@
 //   ハル = Haru / ピピ = Pipi / もこりゅう = Moko
 //   ほしの かけら = Star Shards (かけら alone = shard/Shards) / ほしの ランプ = Star Lamp / ほし = star(s)
 //   ずかん・モンスターずかん = Monster Book / そうさ ほうほう = How to Play / おみせ = Shop / ちず = Map
-//   完全版 = Full Version / テスト版 = test version / ワールド = World / ステージ・面 = stage
 //   とりで = Fort / おばけやしき = Haunted House / しんでん = Temple / しろ = Castle / ほしの みち = Star Road
 //   おまけ = Bonus / ひみつ = Secret / れんしゅう = Practice / ちゅうかんゲート = Checkpoint Gate
 //   よびの はこ = Spare Box / けん = Sword / スピンジャンプ = Spin Jump / ヒップドロップ = Ground Pound
@@ -92,12 +91,8 @@ const EN_DICT = {
   "ジェットつばさ": "Jet Wings",
   "20びょう 3だんジャンプ": "Triple jump for 20 sec",
   "こうにゅうできませんでした": "Purchase didn't go through",
-  "テスト版では まだ かえません": "Purchases aren't available in the test version yet",
-  "こうかいの ときに かえるように なります": "You'll be able to buy it at launch",
   "この版では かえません": "Can't buy in this version",
-  "アプリ版(App Store / Google Play)で かえます": "Buy it in the app (App Store / Google Play)",
   "かったきろくが みつかりません": "No purchase found",
-  "テスト版では まだ ふくげんできません": "Restore isn't available in the test version yet",
   "この版では ふくげんできません": "Can't restore in this version",
   "アプリ版で ためしてください": "Please try it in the app",
   "ストアに つないでいます…": "Connecting to the App Store…",
@@ -116,6 +111,9 @@ const EN_DICT = {
   "・": ",",
   "左下の ◀▶ で いどう / ジャンプ / けん": "Move with ◀▶ bottom-left / Jump / Sword",
   "←→ いどう   スペース・↑ ジャンプ   X けん": "←→ Move   Space/↑ Jump   X Sword",
+  "じゅうじキー いどう   A ジャンプ   B けん": "D-pad Move   A Jump   B Sword",
+  "コントローラー: じゅうじキー いどう / A ジャンプ / B けん": "Controller: D-pad Move / A Jump / B Sword",
+  "X スピン / Y・RB ダッシュ / LB どうぐ / スタート ポーズ": "X Spin / Y・RB Dash / LB Item / Start Pause",
   "ほしを3つあつめよう": "Find all 3 stars!",
   "まおう": "Demon King",
   "スライム大王": "King Slime",
@@ -535,7 +533,6 @@ const EN_DICT = {
   "ステージが あそべる": " stages",
   "まおうの城・あらしの城 ほか": "Demon King's Castle, Storm Castle & more",
   "かいきり(1かいだけ)": "One-time purchase",
-  "テスト版は ぜんぶ むりょう": "Test version: everything is free",
   "こうにゅうずみ": "Purchased",
   "完全版を かう ": "Buy Full Version",
   "こうにゅうを ふくげん": "Restore purchase",
