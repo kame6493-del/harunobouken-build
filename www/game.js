@@ -176,7 +176,7 @@ const IMG = {};
 let loaded = 0;
 const total = SPRITES.length;
 // 絵を 直したら ここを かえる(ブラウザに 古い 絵が のこらないように)
-const SPRITE_V = '20261021b';
+const SPRITE_V = '20261024a';
 for (const n of SPRITES) {
   const im = new Image();
   im.onload = () => { loaded++; if (loaded === total) bakeTiles(); };
@@ -216,7 +216,8 @@ const ART_NAMES = ['title_bg', 'title_logo', 'face_haru', 'face_pipi', 'face_mao
  // 2026-10-18 はしご・つたを のぼる 後ろすがた 4こま(ChatGPT)
   'boss_maou', 'boss_maou2', 'boss_goronta', 'boss_karakara', 'boss_munyaru', 'boss_perari',
   'face_moko', 'face_medama', 'face_karakara', 'face_goronta', 'face_munyaru', 'face_perari', 'face_oboshi',
-  'sw_red', 'sw_blue'];
+  'sw_red', 'sw_blue',
+  'goomy_0', 'goomy_1', 'goomy_2']; // 2026-10-24 こけまる(前の 茶色い 敵の 描き直し): 歩く 2・つぶれ 1、どれも 386x304 で 足もとを そろえてある
 const ART = {};
 for (const n of ART_NAMES) {
   const im = new Image();
@@ -4322,7 +4323,7 @@ const EINFO = typeof ENEMY_INFO !== 'undefined' ? ENEMY_INFO : {};
 const BINFO = typeof BOSS_INFO !== 'undefined' ? BOSS_INFO : {};
 const ZK_ENEMIES = ['goomy', 'shell', 'slime', 'bee', 'bat', 'spiky', 'plant', 'turret', 'skeleton', 'firespirit', 'bomb', 'eye', 'beetle', 'wizard', 'fish', 'orb', 'ghost', 'mogura', 'nageko', 'kumo', 'fugu', 'oobake', 'suberin', 'kororin', 'hotarun', 'bukugani'];
 const ZK_BOSSES = [46, 8, 58, 12, 17, 21, 23, 30, 62, 37, 64, 44];
-const ZK_NAME = { goomy: 'グーミー', shell: 'こうらむし', slime: 'スライム', bee: 'ハチ', bat: 'コウモリ', spiky: 'トゲトゲ', plant: 'パクフラワー', turret: 'ほうだい', skeleton: 'ガイコツ', firespirit: 'ひのたま', bomb: 'ばくだんくん', eye: 'めだまん', beetle: 'カブトムシ', wizard: 'まほうつかい', fish: 'とびうお', orb: 'ひかりだま', ghost: 'おばけ', mogura: 'もぐらん', nageko: 'なげっこ', kumo: 'ぶらさがりぐも', fugu: 'ぷっくん', oobake: 'おおおばけ', suberin: 'すべりん', kororin: 'ころりん', hotarun: 'ほたるん', bukugani: 'ぶくガニ' };
+const ZK_NAME = { goomy: 'こけまる', shell: 'こうらむし', slime: 'スライム', bee: 'ハチ', bat: 'コウモリ', spiky: 'トゲトゲ', plant: 'パクフラワー', turret: 'ほうだい', skeleton: 'ガイコツ', firespirit: 'ひのたま', bomb: 'ばくだんくん', eye: 'めだまん', beetle: 'カブトムシ', wizard: 'まほうつかい', fish: 'とびうお', orb: 'ひかりだま', ghost: 'おばけ', mogura: 'もぐらん', nageko: 'なげっこ', kumo: 'ぶらさがりぐも', fugu: 'ぷっくん', oobake: 'おおおばけ', suberin: 'すべりん', kororin: 'ころりん', hotarun: 'ほたるん', bukugani: 'ぶくガニ' };
 const BOSS_TYPE_OF = { 46: 'slimeking', 8: 'boss', 12: 'boss', 17: 'kabuto', 23: 'yurei', 30: 'queen', 37: 'medama', 44: 'kage', 21: 'hone', 58: 'hone', 62: 'hone', 64: 'hone' };
 function zkKeyOf(o) { return o.d.boss ? 'B' + world.def.id : o.type; }
 // ずかんは「たおしたら」のる(2026-10-13 持ち主)。見かけた だけ(s:1, b:0)は 影と ??? のまま
@@ -4376,7 +4377,7 @@ function zkComputeWorlds() {
 }
 // ずかんの ひとこと せつめい(2026-10-16。ゲームの 中で ほんとうに そう うごく ことだけ。2〜3ぎょう)
 const ZK_DESC = {
-  goomy: ['いつも おこって あるいてくる ちゃいろの こ。', 'はねの ある なかまは ぴょんぴょん はねる。', 'ふんでも けんでも たおせる。'],
+  goomy: ['こけの かたまりに はっぱの みみが ついた こ。', 'はねの ある なかまは ぴょんぴょん はねる。', 'ふんでも けんでも たおせる。'],
   shell: ['あかい こうらの のんびり カメ。がけの はしで くるっと もどる。', 'ふむと こうらに なり、けると すべって ほかの てきを たおす。'],
   slime: ['ぽよんと はねて ちかづいてくる。', 'おおきい ぷるんは たおすと 2つに わかれる。', 'ふんでも けんでも たおせる。'],
   bee: ['そらを とぶ ハチ。ぐるぐる まわる ものや、', 'まっすぐ おりてくる ものが いる。', 'ふんでも けんでも たおせる。'],
@@ -4416,7 +4417,7 @@ const ZK_DESC = {
   B44: ['じめんを はう かげの なみを なげ、ハルの うごきを おくれて まねる。', '大ジャンプの あと ふらつく ときが チャンス。'],
 };
 const ZK_DESC_EN = {
-  goomy: ['A grumpy brown critter that walks toward you.', 'Winged ones hop around.', 'Stomp it or use the sword.'],
+  goomy: ['A ball of moss with two leaf ears. It toddles toward you.', 'Winged ones hop around.', 'Stomp it or use the sword.'],
   shell: ['A slow turtle with a red shell. Turns around at ledges.', 'Stomp it into a shell, then kick it to knock out other enemies.'],
   slime: ['Bounces closer and closer.', 'Big ones split in two when defeated.', 'Stomp it or use the sword.'],
   bee: ['A flying bee. Some circle around,', 'others dive straight down.', 'Stomp it or use the sword.'],
@@ -4458,7 +4459,7 @@ const ZK_DESC_EN = {
 
 // ずかんの「せいかく・くらし」(2026-10-16 夜 持ち主「性格とか生態とか」)。ゲームの 中の せってい。うごきの 説明(ZK_DESC)と くいちがわない ように 書く
 const ZK_LORE = {
-  goomy: 'いつも おこった かおを しているけど、じつは おなかが すいている だけ。くさの みを さがして くさはらを あるきまわる。ひるねを じゃまされると、もっと ぷんぷん。',
+  goomy: 'もりの こけが まるまって うまれた こ。あたまの しろい はなは、きげんが いいと ひらく。ひなたぼっこが だいすきで、あさつゆを のみながら くさはらを のんびり あるく。',
   shell: 'のんびりやで、いちにちに すすむのは ほんの すこし。たかい ところが こわいので、がけの はしで すぐ もどる。こうらの なかは ひんやりして きもちが いいらしい。',
   slime: 'スライム大王の けらい。あさつゆを のんで ぷるぷるの からだを たもつ。なかまと くっついて 大きく なるのが ちょっとした じまん。',
   bee: 'はなの みつを あつめる はたらきもの。じょおうバチの ために まいにち いっしょうけんめい とぶ。ひかる ピピを はなと まちがえて ついてくる ことも。',
@@ -4498,7 +4499,7 @@ const ZK_LORE = {
   B44: 'ランプの したで うまれた かげ。つよがって いるけど、ほんとうは ずっと さみしくて、だれかに みて ほしかった。',
 };
 const ZK_LORE_EN = {
-  goomy: 'It always looks angry, but most of the time it is just hungry. It wanders the meadows hunting for seeds, and gets even grumpier if you wake it from a nap.',
+  goomy: 'It was born when forest moss rolled itself into a ball. The white flower on its head opens when it is in a good mood. It loves sunny spots and strolls the meadows sipping morning dew.',
   shell: 'A laid-back turtle that barely gets anywhere in a day. Heights scare it, so it turns around at every ledge. They say it is nice and cool inside the shell.',
   slime: 'A loyal servant of the Slime King. It sips morning dew to stay wobbly, and is quietly proud of growing big by sticking to its friends.',
   bee: 'A hard worker that gathers nectar for the Queen Bee every single day. Sometimes it mistakes glowing Pipi for a flower and follows along.',
@@ -6723,6 +6724,7 @@ function drawEnemy(o, t) {
   if (o.dying) {
     if (!(d.art && ART[d.art]) && d.filter) ctx.filter = d.filter;
     if (o.squashT !== undefined && o.vy > -400 && o.dyingT < 0.3) {
+      if (o.type === 'goomy' && ART.goomy_2) { drawFit('goomy_2', cx, bottom, h, flip); ctx.restore(); return; }
       ctx.translate(cx, bottom); ctx.scale(1.3, 0.35); drawFit(name, 0, 0, h, flip); ctx.restore(); return;
     }
     ctx.translate(cx, o.y + o.h / 2); ctx.rotate(Math.PI); ctx.globalAlpha = Math.max(0, 1 - o.dyingT / 1.6);
@@ -6893,7 +6895,7 @@ function drawEnemy(o, t) {
       drawFit(name, cx, bottom - Math.abs(Math.sin(o.ph * 8)) * 2, h, flip); break;
     }
     case 'bee': case 'bat': drawFit(name, cx, bottom, h, flip); break;
-    case 'goomy': if (o.v === 'para') { const fl = Math.sin(o.ph * 18) * 0.4; for (const sd of [-1, 1]) { ctx.save(); ctx.translate(cx + sd * 16, o.y + 6); ctx.scale(sd, 1); ctx.rotate(-0.4 + fl); drawImg('p_wing', -4, -22, 30, 26); ctx.restore(); } } drawFit(name, cx, bottom - (o.onGround ? Math.abs(Math.sin(o.ph * 8)) * 2 : 0), h, flip); break;
+    case 'goomy': if (o.v === 'para') { const fl = Math.sin(o.ph * 18) * 0.4; for (const sd of [-1, 1]) { ctx.save(); ctx.translate(cx + sd * 16, o.y + 6); ctx.scale(sd, 1); ctx.rotate(-0.4 + fl); drawImg('p_wing', -4, -22, 30, 26); ctx.restore(); } } drawFit(ART.goomy_0 ? (o.onGround && Math.floor(o.ph * 6) % 2 && ART.goomy_1 ? 'goomy_1' : 'goomy_0') : name, cx, bottom - (o.onGround ? Math.abs(Math.sin(o.ph * 8)) * 2 : 0), h, flip); break;
     case 'beetle': if (o.charge > 0.5) { ctx.filter = 'saturate(1.6) brightness(1.15)'; } drawFit(name, cx, bottom - (o.charge > 0.5 ? Math.abs(Math.sin(o.ph * 30)) * 3 : 0), h, flip); break;
     case 'slime': { const s = o.onGround ? 1 + Math.sin(o.ph * 8) * 0.06 : 0.9; ctx.translate(cx, bottom); ctx.scale(2 - s, s); drawFit(name, 0, 0, o.big ? 58 : h, flip); break; }
     case 'turret': drawFit(name, cx, bottom, h, o.face > 0); break;
